@@ -13,6 +13,7 @@ class MyState(rx.State):
     
     #DATA: MUESTRA EN INDEX, DATAM: REFERENCIA, DATAG: EXCEL
     data: list = []
+    data2: list = []
     dataM: list = []
     dataG:list = []
     columns: list[str] = ["RACK 1", "RACK 2", "RACK 3"]
@@ -26,14 +27,22 @@ class MyState(rx.State):
         for columna in range(3):
             fila_numeros.append(0)
         data.append(fila_numeros)
-        dataM.append(fila_numeros)
+        data2.append(fila_numeros)
         dataG.append(fila_numeros)
+        dataM.append(fila_numeros)
     cont = 1
     for i in range(3):
         for k in range(30):
-            data[k][i] = str(cont)
-            dataM[k][i] = str(cont)
-            dataG[k][i] = str(cont)
+            if cont < 11:
+                data[k][i] = "Lenovo'"  + str(cont)
+                data2[k][i] = "Lenovo'" + str(cont)
+                dataM[k][i] = "Lenovo'" + str(cont)
+                dataG[k][i] = "Lenovo'" + str(cont)
+            elif cont <43:
+                data[k][i] = "LenovoV330'"  + str(cont)
+                data2[k][i] = "LenovoV330'" + str(cont)
+                dataM[k][i] = "LenovoV330'" + str(cont)
+                dataG[k][i] = "LenovoV330'" + str(cont)
             cont += 1
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
@@ -58,25 +67,24 @@ class MyState(rx.State):
     def ingresar(self):
         for i in range(3):
             for k in range(30):
-                #BUSCA LA UBICACION DEL NUMERO
-                if str(self.dataM[k][i]) == self.numero:
+                #BUSCA LA UBICACION DEL NUMERO "LenovoV330'15" str(self.dataM[k][i])
+                if self.dataM[k][i] == self.numero:
                     #ACTUALIZA LA HORA
                     current_datetime = datetime.datetime.now()
                     formatted_datetime = current_datetime.strftime("%H:%M")
                     
                     #CONSULTA SI ESTA YA RESERVADA
                     if self.docente.upper() in self.data[k][i]:
-                        self.data[k][i] = self.dataM[k][i]
+                        self.data[k][i] = self.data2[k][i]
                     else:
                         #REEMPLAZA EN EL CASO QUE NO ESTE RESERVADA Y GUARDA EL HISTORIAL GLOBAL EN EXCEL
-                        self.data[k][i] = f"{self.dataM[k][i]} ~ Docente: {self.docente.upper()}  Curso: {self.curso.upper()}  Hora: {formatted_datetime} ~"
+                        self.data[k][i] = f"{self.data2[k][i]} ~ Docente: {self.docente.upper()}  Curso: {self.curso.upper()}  Hora: {formatted_datetime} ~"
                         self.dataG[k][i] = self.dataG[k][i] + f" ~ Docente: {self.docente.upper()}  Curso: {self.curso.upper()}  Hora: {formatted_datetime} ~"
-                        
                         df = pd.DataFrame(self.dataG, columns=["RACK 1", "RACK 2", "RACK 3"])
                         df.to_excel(archivo, index=True) 
-                    
-                    break
-        self.numero = ""
+                        
+                    #break
+        #self.numero = ""
                 
                     
 
